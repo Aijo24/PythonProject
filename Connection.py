@@ -14,6 +14,7 @@ class connection :
         #   )""")
 
         # c.execute("INSERT INTO users VALUES ('user', 1234)")
+
         checkUser = self.name
         checkCodePin = self.codePin
 

@@ -9,7 +9,8 @@ c = conn.cursor()
 #           name TEXT,
 #           pinCode INTEGER
 #   )""")
-# c.execute("INSERT INTO users VALUES ('user', 1234)")
+#c.execute("INSERT INTO users VALUES ('aissam', 1234, 12000, null)")
+#conn.commit()
 # c.execute('''ALTER TABLE users
 #             ADD COLUMN solde REAL''')
 # c.execute('''ALTER TABLE users
@@ -19,19 +20,38 @@ c = conn.cursor()
 #           amount INTEGER
 #           date DATETIME
 #   )""")
+#c.execute("""CREATE TABLE retraits (
+#            name TEXT,
+#            pinCode INTEGER,
+#            amount DECIMAL,
+#            date DATETIME
+#    )""")
 
 user = input("Entrez votre nom")
 codePin = int(input("Entrez votre codePin"))
+max_trials = 2
+trials = max_trials
 
-tryConnect = connection(user,codePin)
 
-if tryConnect.Connect():
-    compte = bankAccount()
-    montant = float(input("Combien voulez vous retirer ?"))
-    compte.Retrait(user,montant, codePin)
-else :
-    print("Nom d'utilisateur ou codePin incorrect")
+while(trials > 0):
+
+    tryConnect = connection(user, codePin)
+    if tryConnect.Connect():
+        compte = bankAccount()
+        montant = 0
+        compte.Retrait(montant, user, codePin)
+
+        conn.commit()
+        break
+    else :
+        print("Nom ou code pin incorrect, il vous reste " + str(trials) + " essais.")
+        user = input("Entrez votre nom")
+        codePin = int(input("Entrez votre codePin"))
+        trials -= 1
+
+
 """
+
 max_trials = 3
 trials = max_trials
 solde = 1000
