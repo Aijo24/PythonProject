@@ -37,9 +37,9 @@ while(trials > 0):
 
     tryConnect = connection(user, codePin)
     if tryConnect.Connect():
-        compte = bankAccount()
+        compte = BankAccount()
         montant = 0
-        compte.Retrait(montant, user, codePin)
+        compte.Retrait(user, codePin)
 
         conn.commit()
         break
@@ -48,6 +48,8 @@ while(trials > 0):
         user = input("Entrez votre nom")
         codePin = int(input("Entrez votre codePin"))
         trials -= 1
+
+
 
 
 """
