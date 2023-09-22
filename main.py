@@ -39,7 +39,19 @@ while(trials > 0):
     if tryConnect.Connect():
         compte = BankAccount()
         montant = 0
-        compte.Retrait(user, codePin)
+        while True:
+            try:
+                choix = int(input("Voulez-vous retirer (1) ou afficher vos dernières transactions (2) ? : "))
+                if choix == 1:
+                    compte.Retrait(user, codePin)
+                    break
+                elif choix == 2:
+                    compte.History()
+                    break
+                else:
+                    print("Veuillez choisir 1 pour retirer ou 2 pour afficher l'historique.")
+            except ValueError:
+                print("Veuillez entrer un nombre entier (1 ou 2).")
 
         conn.commit()
         break
@@ -48,9 +60,6 @@ while(trials > 0):
         user = input("Entrez votre nom")
         codePin = int(input("Entrez votre codePin"))
         trials -= 1
-
-
-
 
 """
 
