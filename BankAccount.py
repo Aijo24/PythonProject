@@ -121,4 +121,5 @@ class BankAccount:
                 print("Veuillez entrer un caractère valide.")
                 print("Veuillez répondre par 'o' ou 'n'.")
 
+
 # Vous devrez instancier la classe BankAccount et appeler la méthode Retrait pour effectuer des retraits.
