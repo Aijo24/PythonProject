@@ -2,6 +2,8 @@ import sqlite3
 from datetime import datetime, timedelta
 from math import floor
 
+
+
 class BankAccount:
     def __init__(self):
         self.dateDeRetrait = None
@@ -44,7 +46,7 @@ class BankAccount:
                       (user, codePin, montant, datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")))
             conn.commit()
 
-            if montant >= 30:
+            if montant >= 50:
                 petit_ou_gros = ""
 
                 while petit_ou_gros != "p" and petit_ou_gros != "g":
@@ -70,16 +72,16 @@ class BankAccount:
                             nb_billet_100 = floor(montant / 100)
                             reste = montant - nb_billet_100 * 100
 
-                            while reste % 100 == 0:
+                            while reste % 100 == 0 and reste != 0:
                                 nb_billet_100 = floor(montant / 100)
-                                reste = montant - nb_billet_100 * 100
+                                reste = reste - nb_billet_100 * 100
 
-                            while reste % 50 == 0:
-                                nb_billet_50 = floor(montant / 50)
-                                reste = montant - nb_billet_50 * 50
+                            while reste % 50 == 0 and reste != 0:
+                                nb_billet_50 = floor(reste / 50)
+                                reste = reste - nb_billet_50 * 50
 
-                            nb_billet_20 = floor(montant / 20)
-                            reste = montant - nb_billet_20 * 20
+                            nb_billet_20 = floor(reste / 20)
+                            reste = reste - nb_billet_20 * 20
                             nb_billet_10 = int(reste / 10)
 
                             message = "Vous avez retiré :"
@@ -100,26 +102,31 @@ class BankAccount:
                         print("Veuillez entrer un caractère valide.")
                         print("Veuillez répondre par 'p' ou 'g'.")
 
-            print(str(montant) + " € retiré")
+            print(str(montant) + " € retirés")
             print("Il vous reste :", str(self.solde) + " €")
         else:
             print("Solde insuffisant sur le compte ou montant quotidien maximum atteint.")
 
-    def History(self):
-        affiche_historique = ""
-        while affiche_historique != "o" and affiche_historique != "n":
-            try:
-                affiche_historique = input("Voulez-vous un historique de vos retraits ? o/n : ").lower()
-                if affiche_historique == "o":
-                    # Affiche l'historique des retraits ici en interrogeant la base de données
-                    pass
-                elif affiche_historique == "n":
-                    pass  # Vous pouvez ajouter ici le code pour gérer le cas où l'utilisateur ne veut pas d'historique
+    def History(self, user):
+        conn = sqlite3.connect('bank.db')
+        c = conn.cursor()
+        try:
+                c.execute("SELECT amount, date FROM retraits WHERE name = ? ORDER BY date DESC LIMIT 5",
+                          (user,))
+                resultats = c.fetchall()
+
+                if len(resultats) > 0:
+                    print("Les 5 derniers retraits de l'utilisateur", user, "sont les suivants :")
+                    for row in resultats:
+                        montant_retrait = row[0]
+                        date_retrait = row[1]
+
+                        date_obj = datetime.strptime(date_retrait, "%Y-%m-%d %H:%M:%S.%f")
+
+                        date_formattee = date_obj.strftime("%d/%m/%Y %H:%M")
+
+                        print("Montant retiré :", montant_retrait, "€ - Date du retrait :", date_formattee)
                 else:
-                    print("Veuillez répondre par 'o' ou 'n'.")
-            except:
-                print("Veuillez entrer un caractère valide.")
-                print("Veuillez répondre par 'o' ou 'n'.")
-
-
-# Vous devrez instancier la classe BankAccount et appeler la méthode Retrait pour effectuer des retraits.
+                    print("Aucun retrait trouvé pour l'utilisateur", user)
+        except:
+            print("Une erreur s'est produite lors de la récupération de l'historique des retraits.")

@@ -2,6 +2,7 @@ from Connection import *
 from BankAccount import *
 import sqlite3
 
+
 conn = sqlite3.connect('bank.db')
 c = conn.cursor()
 
@@ -29,7 +30,7 @@ c = conn.cursor()
 
 user = input("Entrez votre nom")
 codePin = int(input("Entrez votre codePin"))
-max_trials = 2
+max_trials = 3
 trials = max_trials
 
 
@@ -46,7 +47,7 @@ while(trials > 0):
                     compte.Retrait(user, codePin)
                     break
                 elif choix == 2:
-                    compte.History()
+                    compte.History(user)
                     break
                 else:
                     print("Veuillez choisir 1 pour retirer ou 2 pour afficher l'historique.")
@@ -56,10 +57,12 @@ while(trials > 0):
         conn.commit()
         break
     else :
+        trials -= 1
         print("Nom ou code pin incorrect, il vous reste " + str(trials) + " essais.")
         user = input("Entrez votre nom")
         codePin = int(input("Entrez votre codePin"))
-        trials -= 1
+
+
 
 
 """
