@@ -1,90 +1,50 @@
 from Connection import *
 from BankAccount import *
 import sqlite3
+import sys
 
 
-conn = sqlite3.connect('bank.db')
-c = conn.cursor()
+while True:
+    user = input("Entrez votre nom : ")
+    codePin = input("Entrez votre codePin : ")
 
-# c.execute("""CREATE TABLE users (
-#           name TEXT,
-#           pinCode INTEGER
-#   )""")
-#c.execute("INSERT INTO users VALUES ('aissam', 1234, 12000, null)")
-#conn.commit()
-# c.execute('''ALTER TABLE users
-#             ADD COLUMN solde REAL''')
-# c.execute('''ALTER TABLE users
-#             ADD COLUMN dernier_retrait DATETIME''')
-# c.execute("""CREATE TABLE retraits (
-#           name TEXT,
-#           amount INTEGER
-#           date DATETIME
-#   )""")
-#c.execute("""CREATE TABLE retraits (
-#            name TEXT,
-#            pinCode INTEGER,
-#            amount DECIMAL,
-#            date DATETIME
-#    )""")
+    MAX_TRIALS = 3
+    trials = MAX_TRIALS
 
-user = input("Entrez votre nom")
-codePin = int(input("Entrez votre codePin"))
-max_trials = 3
-trials = max_trials
-
-
-while(trials > 0):
-
-    tryConnect = connection(user, codePin)
-    if tryConnect.Connect():
+    while trials > 0:
         compte = BankAccount()
-        montant = 0
-        while True:
-            try:
-                choix = int(input("Voulez-vous retirer (1) ou afficher vos dernières transactions (2) ? : "))
-                if choix == 1:
-                    compte.Retrait(user, codePin)
-                    break
-                elif choix == 2:
-                    compte.History(user)
-                    break
-                else:
-                    print("Veuillez choisir 1 pour retirer ou 2 pour afficher l'historique.")
-            except ValueError:
-                print("Veuillez entrer un nombre entier (1 ou 2).")
+        tryConnect = Connection(user, codePin)
+        autre_action = ''
 
-        conn.commit()
-        break
-    else :
-        trials -= 1
-        print("Nom ou code pin incorrect, il vous reste " + str(trials) + " essais.")
-        user = input("Entrez votre nom")
-        codePin = int(input("Entrez votre codePin"))
+        if tryConnect.Connect():
+            while autre_action != 'q':
+                while True:
+                    try:
+                        choix = int(input("Voulez-vous retirer (1) ou afficher vos dernières transactions (2) ? : "))
+                        if choix == 1:
+                            compte.Retrait(user, codePin)
+                            break
+                        elif choix == 2:
+                            compte.History(user)
+                            break
+                        else:
+                            print("Veuillez choisir 1 pour retirer ou 2 pour afficher l'historique.")
+                    except ValueError:
+                        print("Veuillez entrer 1 ou 2.")
 
+                autre_action = input("Voulez-vous effectuer une autre action ou quitter ? a/q : ")
 
+                while autre_action.lower() != 'a' and autre_action.lower() != 'q':
+                    print("Entrer (a) ou (q)")
+                    autre_action = input("Voulez-vous effectuer une autre action ou quitter ? a/q : ")
 
-
-"""
-
-max_trials = 3
-trials = max_trials
-solde = 1000
-
-
-while trials > 0:
-    tryUser = input("Entrez votre nom d'utilisateur: ")
-    tryCodePin = int(input("Entrez votre code pin: "))
-
-    if tryUser != user or tryCodePin != codePin:
-        trials -= 1
-        print("Nom d'utilisateur ou code pin incorrect, encore " + str(trials) + " essais.")
-
-    else:
-        print("Bienvenue, " + user + "!")
-        print("Votre solde est de " + str(solde) + "€.")
-        break
-
-if trials == 0:
-    print("Vous avez épuisé toutes vos tentatives.")
-"""
+                if autre_action.lower() == 'a':
+                    continue
+                elif autre_action.lower() == 'q':
+                    print("Merci pour votre confiance, à bientôt chez XEFI Bank !")
+                    sys.exit()
+        else:
+            trials -= 1
+            print("Nom ou code PIN incorrect, il vous reste " + str(trials) + " essais.")
+            user = input("Entrez votre nom : ")
+            codePin = input("Entrez votre codePin : ")

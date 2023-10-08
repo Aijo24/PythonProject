@@ -1,26 +1,21 @@
-class connection :
+import sqlite3
+
+class Connection:
     def __init__(self, name, codePin):
         self.name = name
         self.codePin = codePin
+        self.solde = 0
 
     def Connect(self):
-        import sqlite3
-
         conn = sqlite3.connect('bank.db')
         c = conn.cursor()
-        # c.execute("""CREATE TABLE users (
-        #           name TEXT,
-        #           pinCode INTEGER
-        #   )""")
-
-        # c.execute("INSERT INTO users VALUES ('user', 1234)")
-
-        checkUser = self.name
-        checkCodePin = self.codePin
-
-        sql = "SELECT * FROM users WHERE name = ? AND pinCode = ?"
-        c.execute(sql, (checkUser, checkCodePin))
+        c.execute("SELECT * FROM users WHERE name = ? AND pinCode = ?", (self.name, self.codePin))
         results = c.fetchall()
         if results:
-            print("Connection établie !")
+            c.execute("SELECT solde FROM users WHERE name = ? AND pinCode = ?", (self.name, self.codePin))
+            self.solde = c.fetchone()[0]
+            print("Bienvenue sur votre compte XEFI Bank !")
+            print("Solde actuel :", self.solde)
             return True
+        else:
+            return False
